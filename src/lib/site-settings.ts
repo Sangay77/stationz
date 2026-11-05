@@ -84,6 +84,12 @@ export const SETTING_SECTIONS = [
     description: "Phone, email, address, and hours shown on the site.",
     keys: ["phone", "email", "address", "business_hours"],
   },
+  {
+    id: "email",
+    label: "Email (SMTP)",
+    description: "Outbound mail for booking acknowledgements. Changes apply immediately.",
+    keys: [],
+  },
 ] as const;
 
 export const defaultSiteSettings: ResolvedSiteSettings = {

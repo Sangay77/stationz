@@ -34,7 +34,7 @@ export default function AdminMenusPage() {
       const data = await apiFetch<MenuItem[]>("/admin/menus", { token: user.token });
       setItems(data);
     } catch (error) {
-      status.error(getErrorMessage(error, "Failed to load menus."));
+      status.error(getErrorMessage(error, "We couldn’t load menus. Please refresh and try again."));
     }
   };
 
@@ -69,7 +69,7 @@ export default function AdminMenusPage() {
       resetForm();
       await load();
     } catch (error) {
-      status.error(getErrorMessage(error, "Could not save menu item."));
+      status.error(getErrorMessage(error, "We couldn’t save that menu item. Please check the form and try again."));
     } finally {
       setSaving(false);
     }
@@ -84,7 +84,27 @@ export default function AdminMenusPage() {
       status.success(`Deleted “${label}”.`);
       await load();
     } catch (error) {
-      status.error(getErrorMessage(error, "Could not delete menu item."));
+      status.error(getErrorMessage(error, "We couldn’t delete that menu item. Please try again."));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function toggleActive(item: MenuItem) {
+    if (!user) return;
+    setBusyId(item.id);
+    try {
+      await apiFetch(`/admin/menus/${item.id}/active`, {
+        method: "PATCH",
+        token: user.token,
+        body: { active: !item.active },
+      });
+      status.success(
+        item.active ? `Disabled “${item.label}” on the site.` : `Enabled “${item.label}” on the site.`
+      );
+      await load();
+    } catch (error) {
+      status.error(getErrorMessage(error, "We couldn’t update menu visibility. Please try again."));
     } finally {
       setBusyId(null);
     }
@@ -184,6 +204,7 @@ export default function AdminMenusPage() {
             active: item.active,
           });
         }}
+        onToggleActive={toggleActive}
         onDelete={remove}
       />
 
@@ -201,6 +222,7 @@ export default function AdminMenusPage() {
             active: item.active,
           });
         }}
+        onToggleActive={toggleActive}
         onDelete={remove}
       />
     </div>
@@ -212,12 +234,14 @@ function MenuList({
   items,
   busyId,
   onEdit,
+  onToggleActive,
   onDelete,
 }: {
   title: string;
   items: MenuItem[];
   busyId: number | null;
   onEdit: (item: MenuItem) => void;
+  onToggleActive: (item: MenuItem) => void;
   onDelete: (id: number, label: string) => void;
 }) {
   return (
@@ -226,15 +250,25 @@ function MenuList({
       {items.map((item) => (
         <div
           key={item.id}
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-white p-4"
+          className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 ${
+            item.active ? "border-border bg-white" : "border-dashed border-border bg-muted/20 opacity-80"
+          }`}
         >
           <div>
             <p className="font-medium text-ink">{item.label}</p>
             <p className="text-xs text-muted-foreground">
-              {item.href} · order {item.sortOrder} · {item.active ? "Active" : "Hidden"}
+              {item.href} · order {item.sortOrder} · {item.active ? "Visible on site" : "Hidden"}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={item.active ? "outline" : "default"}
+              disabled={busyId === item.id}
+              onClick={() => onToggleActive(item)}
+            >
+              {item.active ? "Disable" : "Enable"}
+            </Button>
             <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
               Edit
             </Button>

@@ -42,7 +42,7 @@ export default function AdminServicesPage() {
       const data = await apiFetch<ServiceItem[]>("/admin/services", { token: user.token });
       setServices(data);
     } catch (error) {
-      status.error(getErrorMessage(error, "Failed to load services."));
+      status.error(getErrorMessage(error, "We couldn’t load services. Please refresh and try again."));
     }
   };
 
@@ -63,7 +63,7 @@ export default function AdminServicesPage() {
       setForm((prev) => ({ ...prev, imageUrl: result.url }));
       status.success("Image uploaded.");
     } catch (error) {
-      status.error(getErrorMessage(error, "Image upload failed."));
+      status.error(getErrorMessage(error, "We couldn’t upload that image. Please try a different file."));
     } finally {
       setUploading(false);
     }
@@ -97,7 +97,7 @@ export default function AdminServicesPage() {
       resetForm();
       await load();
     } catch (error) {
-      status.error(getErrorMessage(error, "Could not save service."));
+      status.error(getErrorMessage(error, "We couldn’t save that service. Please check the form and try again."));
     } finally {
       setSaving(false);
     }
@@ -113,7 +113,7 @@ export default function AdminServicesPage() {
       status.success(`Deleted “${name}”.`);
       await load();
     } catch (error) {
-      status.error(getErrorMessage(error, "Could not delete service."));
+      status.error(getErrorMessage(error, "We couldn’t delete that service. Please try again."));
     } finally {
       setBusyId(null);
     }

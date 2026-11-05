@@ -7,6 +7,7 @@ import {
   CalendarDays,
   FileText,
   LayoutTemplate,
+  Mail,
   MessageSquare,
   Newspaper,
   PanelTop,
@@ -201,6 +202,12 @@ export default function AdminDashboardPage() {
       label: "Settings & branding",
       desc: "Logo, colors, fonts, contact details",
       icon: Settings,
+    },
+    {
+      href: "/admin/settings#email",
+      label: "Email (SMTP)",
+      desc: "Outbound mail for booking acknowledgements",
+      icon: Mail,
     },
     {
       href: "/admin/settings#layout",

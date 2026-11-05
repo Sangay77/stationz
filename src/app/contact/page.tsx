@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api";
+import { getErrorMessage } from "@/lib/admin-form";
 import { brand } from "@/lib/brand";
 import { sanitizeRichText } from "@/lib/sanitize";
 import { useSiteSettings } from "@/context/site-settings-context";
@@ -49,7 +50,9 @@ export default function ContactPage() {
       setStatus("Thanks! We’ll get back to you soon.");
       formEl.reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to send message");
+      setError(
+        getErrorMessage(err, "We couldn’t send your message. Please try again or call us.")
+      );
     } finally {
       setLoading(false);
     }

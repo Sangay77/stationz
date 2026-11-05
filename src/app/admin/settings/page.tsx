@@ -30,6 +30,7 @@ import {
 } from "@/lib/theme";
 import { RELEVANT_SETTING_KEYS, SETTING_SECTIONS } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
+import { MailSettingsForm } from "@/components/admin/mail-settings-form";
 
 const IMAGE_KEYS = new Set(["logo_url", "banner_url", "about_image_url"]);
 const COLOR_KEYS = new Set(["color_primary", "color_accent", "color_background", "color_ink"]);
@@ -161,7 +162,7 @@ export default function AdminSettingsPage() {
       });
       setDrafts(map);
     } catch (error) {
-      status.error(getErrorMessage(error, "Failed to load settings."));
+      status.error(getErrorMessage(error, "We couldn’t load settings. Please refresh and try again."));
     }
   };
 
@@ -193,7 +194,7 @@ export default function AdminSettingsPage() {
     let value = (drafts[setting.settingKey] ?? "").trim();
     if (!value) {
       markField(setting.settingKey, "failed");
-      status.error(`“${label}” cannot be empty.`);
+      status.error(`Please enter a value for “${label}”.`);
       return;
     }
 
@@ -201,7 +202,7 @@ export default function AdminSettingsPage() {
       const n = Number.parseInt(value, 10);
       if (!Number.isFinite(n) || n < 36 || n > 65) {
         markField(setting.settingKey, "failed");
-        status.error("Banner height must be between 36 and 65.");
+        status.error("Banner height must be between 36% and 65%.");
         return;
       }
       value = String(n);
@@ -237,7 +238,7 @@ export default function AdminSettingsPage() {
       await refreshSettings();
     } catch (error) {
       markField(setting.settingKey, "failed");
-      status.error(getErrorMessage(error, `Could not save “${label}”.`));
+      status.error(getErrorMessage(error, `We couldn’t save “${label}”. Please try again.`));
     } finally {
       setSavingKey(null);
     }
@@ -266,7 +267,7 @@ export default function AdminSettingsPage() {
       await refreshSettings();
     } catch (error) {
       markField(setting.settingKey, "failed");
-      status.error(getErrorMessage(error, `Could not upload “${label}”.`));
+      status.error(getErrorMessage(error, `We couldn’t upload the image for “${label}”. Please try a different file.`));
     } finally {
       setUploadingKey(null);
     }
@@ -277,14 +278,14 @@ export default function AdminSettingsPage() {
     const value = (drafts[setting.settingKey] ?? "").trim();
     if (!value) {
       markField(setting.settingKey, "failed");
-      status.error(`“${label}” cannot be empty.`);
+      status.error(`Please enter a value for “${label}”.`);
       return;
     }
     if (isHeroHeight(setting.settingKey)) {
       const n = Number.parseInt(value, 10);
       if (!Number.isFinite(n) || n < 36 || n > 65) {
         markField(setting.settingKey, "failed");
-        status.error("Banner height must be between 36 and 65.");
+        status.error("Banner height must be between 36% and 65%.");
         return;
       }
     }
@@ -316,11 +317,10 @@ export default function AdminSettingsPage() {
   return (
     <div className="w-full space-y-6">
       <div>
-        <p className="text-xs font-semibold tracking-[0.14em] text-primary uppercase">Design</p>
-        <h1 className="mt-1 font-display text-3xl text-ink">Settings &amp; layout</h1>
+        <p className="text-xs font-semibold tracking-[0.14em] text-primary uppercase">Admin</p>
+        <h1 className="mt-1 font-display text-3xl text-ink">Settings</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Upload the homepage banner, tune typography and colors, and keep contact details accurate.
-          These controls shape how beautiful and on-brand the public pages look.
+          Branding, layout, contact details, and outbound email (SMTP) for booking acknowledgements.
         </p>
       </div>
 
@@ -350,14 +350,18 @@ export default function AdminSettingsPage() {
           <p className="mt-1 text-sm text-muted-foreground">{activeSection.description}</p>
         </div>
 
-        {sectionSettings.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-white px-5 py-8 text-sm text-muted-foreground">
-            No settings in this section yet. Restart the backend to seed defaults.
-          </p>
-        )}
+        {section === "email" ? (
+          <MailSettingsForm />
+        ) : (
+          <>
+            {sectionSettings.length === 0 && (
+              <p className="rounded-2xl border border-dashed border-border bg-white px-5 py-8 text-sm text-muted-foreground">
+                No settings in this section yet. Restart the backend to seed defaults.
+              </p>
+            )}
 
-        <div className="grid gap-4">
-          {sectionSettings.map((setting) => {
+            <div className="grid gap-4">
+              {sectionSettings.map((setting) => {
             const isImage = IMAGE_KEYS.has(setting.settingKey);
             const value = drafts[setting.settingKey] || "";
             const local = fieldStatus[setting.settingKey];
@@ -607,7 +611,9 @@ export default function AdminSettingsPage() {
               </div>
             );
           })}
-        </div>
+            </div>
+          </>
+        )}
       </section>
 
       {dialog && (

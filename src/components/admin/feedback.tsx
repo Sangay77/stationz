@@ -29,7 +29,15 @@ export function useAdminStatus(autoHideMs = 5000) {
   );
 
   const success = useCallback((text: string) => show("success", text), [show]);
-  const error = useCallback((text: string) => show("error", text), [show]);
+  const error = useCallback((text: string) => {
+    // Errors stay visible a bit longer so admins can read field guidance.
+    setFeedback({ tone: "error", text });
+    if (timer.current) clearTimeout(timer.current);
+    const hideMs = Math.max(autoHideMs, 8000);
+    if (hideMs > 0) {
+      timer.current = setTimeout(() => setFeedback(null), hideMs);
+    }
+  }, [autoHideMs]);
   const info = useCallback((text: string) => show("info", text), [show]);
 
   useEffect(() => () => {

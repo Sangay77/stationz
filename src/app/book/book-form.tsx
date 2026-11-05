@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api";
+import { getErrorMessage } from "@/lib/admin-form";
 import { brand, stationServices } from "@/lib/brand";
 import { useSiteSettings } from "@/context/site-settings-context";
 import { phoneHref } from "@/lib/site-settings";
@@ -72,7 +73,12 @@ export default function BookForm() {
       setStatus("Booking received! We’ll confirm your appointment shortly.");
       formEl.reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to create booking. Please call us instead.");
+      setError(
+        getErrorMessage(
+          err,
+          "We couldn’t submit your booking. Please check the form or call us instead."
+        )
+      );
     } finally {
       setLoading(false);
     }

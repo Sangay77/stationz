@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AdminFeedback, useAdminStatus } from "@/components/admin/feedback";
 import { apiFetch } from "@/lib/api";
+import { getErrorMessage } from "@/lib/admin-form";
 import { useAuth } from "@/context/auth-context";
 import type { ContactItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -9,20 +11,33 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminMessagesPage() {
   const { user } = useAuth();
+  const status = useAdminStatus();
   const [messages, setMessages] = useState<ContactItem[]>([]);
 
-  const load = () => {
+  const load = async () => {
     if (!user) return;
-    apiFetch<ContactItem[]>("/admin/messages", { token: user.token }).then(setMessages);
+    try {
+      const data = await apiFetch<ContactItem[]>("/admin/messages", { token: user.token });
+      setMessages(data);
+    } catch (error) {
+      status.error(getErrorMessage(error, "We couldn’t load messages. Please refresh and try again."));
+    }
   };
 
-  useEffect(load, [user]);
+  useEffect(() => {
+    load();
+  }, [user]);
 
   async function markRead(id: number) {
     if (!user) return;
-    await apiFetch(`/admin/messages/${id}/read`, { method: "PATCH", token: user.token });
-    load();
-    window.dispatchEvent(new Event("admin-messages-changed"));
+    try {
+      await apiFetch(`/admin/messages/${id}/read`, { method: "PATCH", token: user.token });
+      status.success("Message marked as read.");
+      await load();
+      window.dispatchEvent(new Event("admin-messages-changed"));
+    } catch (error) {
+      status.error(getErrorMessage(error, "We couldn’t update that message. Please try again."));
+    }
   }
 
   return (
@@ -31,6 +46,9 @@ export default function AdminMessagesPage() {
         <h1 className="font-display text-3xl">Messages</h1>
         <p className="mt-1 text-sm text-muted-foreground">Contact form inquiries from the website.</p>
       </div>
+
+      <AdminFeedback feedback={status.feedback} onDismiss={status.clear} />
+
       <div className="space-y-3">
         {messages.map((message) => (
           <div key={message.id} className="rounded-xl border p-4">
@@ -51,6 +69,11 @@ export default function AdminMessagesPage() {
             )}
           </div>
         ))}
+        {messages.length === 0 && (
+          <p className="rounded-xl border border-dashed px-4 py-8 text-sm text-muted-foreground">
+            No messages yet.
+          </p>
+        )}
       </div>
     </div>
   );

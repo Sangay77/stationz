@@ -68,18 +68,24 @@ export interface PostComment {
   id: number;
   postId: number;
   postTitle?: string;
+  postSlug?: string;
   authorName: string;
   authorEmail: string;
   content: string;
   approved: boolean;
+  adminReply?: string;
+  repliedAt?: string;
+  repliedBy?: string;
   createdAt?: string;
 }
 
 export interface PostEngagement {
   postId: number;
   postTitle: string;
+  postSlug?: string;
   likeCount: number;
   commentCount: number;
+  pendingCommentCount?: number;
 }
 
 export interface BookingItem {
@@ -96,6 +102,9 @@ export interface BookingItem {
   status: string;
   propertyType?: string;
   squareFootage?: number;
+  acknowledgmentMessage?: string;
+  acknowledgedAt?: string;
+  acknowledgmentEmailSent?: boolean;
   createdAt?: string;
 }
 
@@ -137,6 +146,16 @@ export interface DashboardStats {
   totalServices: number;
   totalPosts: number;
   totalPages: number;
+}
+
+export interface MailSettings {
+  enabled: boolean;
+  host: string;
+  port: number;
+  username: string;
+  passwordConfigured: boolean;
+  from: string;
+  fromName: string;
 }
 
 export interface Testimonial {

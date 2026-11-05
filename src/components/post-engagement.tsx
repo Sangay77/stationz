@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getErrorMessage } from "@/lib/admin-form";
 import { getVisitorKey } from "@/lib/visitor";
 import type { PostComment, PostItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -53,8 +54,8 @@ export function PostEngagement({ post }: { post: PostItem }) {
         setLiked(true);
         setLikeCount((n) => n + 1);
       }
-    } catch {
-      setMessage("Could not update like.");
+    } catch (error) {
+      setMessage(getErrorMessage(error, "We couldn’t update your like. Please try again."));
     } finally {
       setBusy(false);
     }
@@ -74,8 +75,8 @@ export function PostEngagement({ post }: { post: PostItem }) {
       setContent("");
       setMessage("Thanks — your comment was submitted for review.");
       loadComments();
-    } catch {
-      setMessage("Could not post comment.");
+    } catch (error) {
+      setMessage(getErrorMessage(error, "We couldn’t post your comment. Please check the form and try again."));
     } finally {
       setBusy(false);
     }
@@ -155,6 +156,16 @@ export function PostEngagement({ post }: { post: PostItem }) {
                 <p className="mt-1 text-xs text-muted-foreground">
                   {new Date(comment.createdAt).toLocaleString()}
                 </p>
+              )}
+              {comment.adminReply && (
+                <div className="mt-3 rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <p className="text-xs font-semibold text-ink">
+                    {comment.repliedBy || "STATIONZ"} replied
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
+                    {comment.adminReply}
+                  </p>
+                </div>
               )}
             </div>
           ))}

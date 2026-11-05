@@ -47,7 +47,7 @@ export default function AdminPostsPage() {
       const data = await apiFetch<PostItem[]>("/admin/posts", { token: user.token });
       setPosts(data);
     } catch (error) {
-      status.error(getErrorMessage(error, "Failed to load posts."));
+      status.error(getErrorMessage(error, "We couldn’t load posts. Please refresh and try again."));
     }
   };
 
@@ -75,7 +75,7 @@ export default function AdminPostsPage() {
     });
     setErrors(nextErrors);
     if (hasFormErrors(nextErrors)) {
-      status.error("Edit failed: please fix the highlighted fields before saving.");
+      status.error("Please fix the highlighted fields before saving.");
       return;
     }
 
@@ -104,8 +104,8 @@ export default function AdminPostsPage() {
     } catch (error) {
       status.error(
         editingId
-          ? `Edit failed: ${getErrorMessage(error, "Could not update post.")}`
-          : `Create failed: ${getErrorMessage(error, "Could not create post.")}`
+          ? getErrorMessage(error, "We couldn’t update that post. Please check the form and try again.")
+          : getErrorMessage(error, "We couldn’t create that post. Please check the form and try again.")
       );
     } finally {
       setSaving(false);
@@ -123,7 +123,7 @@ export default function AdminPostsPage() {
       status.success(`Deleted successfully: post “${title}” was removed.`);
       await load();
     } catch (error) {
-      status.error(`Delete failed: ${getErrorMessage(error, "Could not delete post.")}`);
+      status.error(getErrorMessage(error, "We couldn’t delete that post. Please try again."));
     } finally {
       setDeletingId(null);
     }
@@ -204,7 +204,7 @@ export default function AdminPostsPage() {
                   setForm((prev) => ({ ...prev, featuredImage: url }));
                   status.success("Upload successful: image ready. Save the post to keep it.");
                 } catch (error) {
-                  status.error(`Upload failed: ${getErrorMessage(error, "Could not upload image.")}`);
+                  status.error(getErrorMessage(error, "We couldn’t upload that image. Please try a different file."));
                 } finally {
                   setUploading(false);
                 }

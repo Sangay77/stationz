@@ -32,6 +32,7 @@ type NavItem = {
   icon: typeof LayoutDashboard;
   badgeKey?: "messages";
   adminOnly?: boolean;
+  staffOnly?: boolean;
 };
 
 type NavGroup = {
@@ -72,6 +73,7 @@ const navGroups: NavGroup[] = [
         adminOnly: true,
       },
       { href: "/admin/users", label: "Users", icon: Users, adminOnly: true },
+      { href: "/admin/users", label: "My password", icon: Users, staffOnly: true },
     ],
   },
 ];
@@ -103,7 +105,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       navGroups
         .map((group) => ({
           ...group,
-          items: group.items.filter((item) => isAdmin || !item.adminOnly),
+          items: group.items.filter((item) => {
+            if (item.adminOnly) return isAdmin;
+            if (item.staffOnly) return !isAdmin;
+            return true;
+          }),
         }))
         .filter((group) => group.items.length > 0),
     [isAdmin]

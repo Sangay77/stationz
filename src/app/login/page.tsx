@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/auth-context";
+import { getErrorMessage } from "@/lib/admin-form";
 import { brand } from "@/lib/brand";
 
 export default function LoginPage() {
@@ -25,7 +26,9 @@ export default function LoginPage() {
       const user = await login(String(form.get("email")), String(form.get("password")));
       router.push(user.role === "ADMIN" || user.role === "STAFF" ? "/admin" : "/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(
+        getErrorMessage(err, "We couldn’t sign you in. Please check your email and password.")
+      );
     } finally {
       setLoading(false);
     }

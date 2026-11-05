@@ -46,7 +46,7 @@ export default function AdminPagesPage() {
       const data = await apiFetch<PageItem[]>("/admin/pages", { token: user.token });
       setPages(data);
     } catch (error) {
-      status.error(getErrorMessage(error, "Failed to load pages."));
+      status.error(getErrorMessage(error, "We couldn’t load pages. Please refresh and try again."));
     }
   };
 
@@ -73,7 +73,7 @@ export default function AdminPagesPage() {
     });
     setErrors(nextErrors);
     if (hasFormErrors(nextErrors)) {
-      status.error("Edit failed: please fix the highlighted fields before saving.");
+      status.error("Please fix the highlighted fields before saving.");
       return;
     }
 
@@ -100,8 +100,8 @@ export default function AdminPagesPage() {
     } catch (error) {
       status.error(
         editingId
-          ? `Edit failed: ${getErrorMessage(error, "Could not update page.")}`
-          : `Create failed: ${getErrorMessage(error, "Could not create page.")}`
+          ? getErrorMessage(error, "We couldn’t update that page. Please check the form and try again.")
+          : getErrorMessage(error, "We couldn’t create that page. Please check the form and try again.")
       );
     } finally {
       setSaving(false);
@@ -111,7 +111,7 @@ export default function AdminPagesPage() {
   async function remove(id: number, title: string, slug: string) {
     if (!user) return;
     if (FIXED_SLUGS.has(slug)) {
-      status.error("Fixed pages (about, contact, services) cannot be deleted.");
+      status.error("The About, Contact, and Services pages can’t be deleted. You can edit or unpublish them instead.");
       return;
     }
     if (!window.confirm(`Delete page “${title}”? This cannot be undone.`)) return;
@@ -123,7 +123,7 @@ export default function AdminPagesPage() {
       status.success(`Deleted successfully: page “${title}” was removed.`);
       await load();
     } catch (error) {
-      status.error(`Delete failed: ${getErrorMessage(error, "Could not delete page.")}`);
+      status.error(getErrorMessage(error, "We couldn’t delete that page. Please try again."));
     } finally {
       setDeletingId(null);
     }

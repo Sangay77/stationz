@@ -9,7 +9,7 @@ export const brand = {
   emailHref: "mailto:stationz2025@gmail.com",
   address: "15 Burt Street, Broadwater, Busselton, WA, 6280",
   hours: "8:00 — 18:00",
-  logo: "https://stationz.com.au/wp-content/uploads/2026/09/cropped_circle_image-1.png",
+  logo: "/logo.png",
   heroImage: "https://stationz.com.au/wp-content/uploads/2026/08/s5.jpeg",
   aboutImage: "https://stationz.com.au/wp-content/uploads/2022/06/pexels-tima-miroshnichenko-16195277.jpg",
   about:
