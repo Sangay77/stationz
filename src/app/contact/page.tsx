@@ -24,7 +24,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    apiFetch<PageItem>("/pages/contact")
+    apiFetch<PageItem>("/api/pages/contact")
       .then(setPage)
       .catch(() => setPage(null));
   }, []);

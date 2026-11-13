@@ -23,7 +23,7 @@ export function SiteFooter() {
   const [explore, setExplore] = useState(fallbackExplore);
 
   useEffect(() => {
-    apiFetch<MenuItem[]>("/menus/FOOTER")
+    apiFetch<MenuItem[]>("/api/menus/FOOTER")
       .then((data) => {
         if (data.length) {
           setExplore(data.map((item) => ({ href: item.href, label: item.label })));

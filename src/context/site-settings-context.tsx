@@ -55,7 +55,7 @@ export function SiteSettingsProvider({ children }: { children: React.ReactNode }
 
   const refreshSettings = useCallback(async () => {
     try {
-      const data = await apiFetch<SiteSetting[]>("/settings/public");
+      const data = await apiFetch<SiteSetting[]>("/api/settings/public");
       const next = mapSettings(data);
       setSettings(next);
       applyThemeToDocument(next);

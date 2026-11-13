@@ -35,7 +35,7 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    apiFetch<MenuItem[]>("/menus/NAVBAR")
+    apiFetch<MenuItem[]>("/api/menus/NAVBAR")
       .then((data) => {
         if (data.length) {
           setLinks(data.map((item) => ({ href: item.href, label: item.label })));

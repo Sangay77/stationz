@@ -19,8 +19,8 @@ export default function ServicesPage() {
 
   useEffect(() => {
     Promise.all([
-      apiFetch<ServiceItem[]>("/services").catch(() => [] as ServiceItem[]),
-      apiFetch<PageItem>("/pages/services").catch(() => null),
+      apiFetch<ServiceItem[]>("/api/services").catch(() => [] as ServiceItem[]),
+      apiFetch<PageItem>("/api/pages/services").catch(() => null),
     ])
       .then(([serviceData, pageData]) => {
         const active = serviceData

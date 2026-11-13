@@ -25,7 +25,7 @@ export default function HomePage() {
   const [services, setServices] = useState<ServiceItem[]>(asServiceItems(stationServices));
 
   useEffect(() => {
-    apiFetch<ServiceItem[]>("/services")
+    apiFetch<ServiceItem[]>("/api/services")
       .then((data) => {
         const active = data
           .filter((s) => s.active)
